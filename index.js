@@ -22,7 +22,7 @@ const search = process.argv[2]
 const commandIndex = parseInt(process.argv[2])
 if (!isNaN(commandIndex)) {
   const requestedCommand = directoryHistory.find(item => getIndex(item) === commandIndex)
-  run(`tmux send-keys ${requestedCommand.split(";")[1]}`)
+  run(`tmux send-keys "${requestedCommand.split(";")[1].replace(/"/g, '\\"')}"`)
 }
 else {
   directoryHistory
