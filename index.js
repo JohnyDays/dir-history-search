@@ -60,7 +60,7 @@ else {
     type: "list",
     name: "commandIndex",
     message: "What command do you want? Here they are.",
-    choices: uniqueHistory.map(item => ({ name: item, value: getIndex(item) })),
+    choices: uniqueHistory.reverse().map(item => ({ name: item, value: getIndex(item) })),
 
   }]).then(answers => {
     const commandIndex = answers.commandIndex
