@@ -17,7 +17,8 @@
   "homepage": "https://github.com/johnydays/dir-history-search#readme",
   "description": "",
   "dependencies": {
-    "colors": "^1.1.2"
+    "colors": "^1.1.2",
+    "inquirer": "^1.0.2"
   },
   "bin": {
     "dir-history-search": "./index.js"

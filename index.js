@@ -3,6 +3,7 @@
 'use strict'
 
 const colors = require('colors/safe')
+const inquirer = require('inquirer')
 const execSync = require('child_process').execSync
 const readFileSync = require('fs').readFileSync
 const appendFileSync = require('fs').appendFileSync
@@ -16,6 +17,7 @@ const colorize = (item, search) => {
   const searchEnd = searchStart + search.length
   return `${item.slice(0, searchStart)}${colors.red(search)}${item.slice(searchEnd)}`
 }
+const sendCommand = item => run(`tmux send-keys "${getCommand(item).replace(/"/g, '\\"')}"`)
 
 const folder = run("pwd")
 const history = readFileSync(`${homedir()}/.directory_history`, "utf8")
@@ -43,11 +45,26 @@ const search = process.argv[2]
 const commandIndex = parseInt(process.argv[2])
 if (!isNaN(commandIndex)) {
   const requestedCommand = directoryHistory.find(item => getIndex(item) === commandIndex)
-  run(`tmux send-keys "${getCommand(requestedCommand).replace(/"/g, '\\"')}"`)
+  sendCommand(requestedCommand)
 }
 else {
-  directoryHistory
+  const uniqueHistory = directoryHistory
     .slice(0, directoryHistory.length - 1)
     .filter(item => ~item.indexOf(search))
-    .map(item => console.log(colorize(item, search)))
+    .map(item => colorize(item, search))
+  if (uniqueHistory.length === 0) {
+    console.log("No matches.")
+    process.exit(1)
+  }
+  inquirer.prompt([{
+    type: "list",
+    name: "commandIndex",
+    message: "What command do you want? Here they are.",
+    choices: uniqueHistory.map(item => ({ name: item, value: getIndex(item) })),
+
+  }]).then(answers => {
+    const commandIndex = answers.commandIndex
+    const requestedCommand = directoryHistory.find(item => getIndex(item) === commandIndex)
+    sendCommand(requestedCommand)
+  })
 }
