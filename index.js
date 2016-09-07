@@ -50,8 +50,8 @@ if (!isNaN(commandIndex)) {
 else {
   const uniqueHistory = directoryHistory
     .slice(0, directoryHistory.length - 1)
-    .filter(item => ~item.indexOf(search))
-    .map(item => colorize(item, search))
+    .filter(item => search == null ? true :  ~item.indexOf(search))
+    .map(item => search != null ? colorize(item, search) : item)
   if (uniqueHistory.length === 0) {
     console.log("No matches.")
     process.exit(1)
@@ -61,7 +61,6 @@ else {
     name: "commandIndex",
     message: "What command do you want? Here they are.",
     choices: uniqueHistory.reverse().map(item => ({ name: item, value: getIndex(item) })),
-
   }]).then(answers => {
     const commandIndex = answers.commandIndex
     const requestedCommand = directoryHistory.find(item => getIndex(item) === commandIndex)
